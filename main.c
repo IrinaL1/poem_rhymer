@@ -134,31 +134,31 @@ int comparator (const void * val1, const void * val2){
 	int len1 = strlen(str1);
 	printf("10\n");
 	int len2 = strlen(str2);
-	int min_len = 0;
-	printf("1\n");
-	if (len1 > len2)
-		min_len = len2;
-	else 
-		min_len = len1;
 	printf("2\n");
-	int i = 0;
+	int i = 1;
 	int j = 1;
 
-	for (i = 1; i <= min_len; i++)
-		while (isalpha(*(str1 + len1 - i))){
-			while (isalpha(*(str2 + len2 - j))){
-				if (*(char*)(str1 + len1 - i)  == *(char*)(str2 + len2 - j))
-					break;
-				else
-					if (*(char*)(str1 + len1 - i) < *(char*)(str2 + len2 - j))
-						return -1;
-					else
-						return 1;
-			}	
-			j++;
+	for (; i <= len1 && j <= len2; i++, j++){
+		while (!isalpha(*(str1 + len1 - i))){
+			i++;
+			if (i == len1)
+				return -1;
 		}
 
-	printf("5\n"); 
+		while (!isalpha(*(str2 + len2 - j))){
+			j++;
+			if (j == len2)
+				return 1;
+		}
+
+		if (*(char*)(str1 + len1 - i)  == *(char*)(str2 + len2 - j))
+			continue;
+		else
+			if (*(char*)(str1 + len1 - i) < *(char*)(str2 + len2 - j))
+				return -1;
+			else
+				return 1;	
+	}
 }
 
 
