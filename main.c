@@ -27,7 +27,7 @@ FILE * rhymer (FILE * fin){
 	char ** poem_arr = NULL;
 	int num_str = 0;
 	printf("Before poem_arr_edit\n");
-	num_str = poem_arr_edit(fin, poem_arr);
+	poem_arr = poem_arr_edit(fin, &num_str);
 	printf("Before qsort, after poem_arr_edit\n");  /*тут все падает, непраильно заполняется массив*/
 	qsort(poem_arr, num_str, sizeof(char * ), comparator);
 	printf("After qsort\n");
@@ -56,7 +56,7 @@ FILE * rhymer (FILE * fin){
 	return fout;
 }   
  
-int poem_arr_edit (FILE * fin, char ** poem_arr){
+char ** poem_arr_edit (FILE * fin, int * num_str){
 
 	if (fseek(fin, 0, SEEK_END) == -1){
 		perror("Fseek error "); 
