@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-   
+#include <ctype.h>
+
 FILE * rhymer (FILE * fin);
-int poem_arr_edit (FILE * fin, char ** poem_arr);
+char ** poem_arr_edit (FILE * fin, int * num_str);
 int comparator (const void * val1, const void * val2);
 
 long sizef; /*File size*/
@@ -26,11 +27,10 @@ int main (int argc, char * argv[]){
 FILE * rhymer (FILE * fin){  
 	char ** poem_arr = NULL;
 	int num_str = 0;
-	printf("Before poem_arr_edit\n");
+
 	poem_arr = poem_arr_edit(fin, &num_str);
-	printf("Before qsort, after poem_arr_edit\n");  /*тут все падает, непраильно заполняется массив*/
 	qsort(poem_arr, num_str, sizeof(char * ), comparator);
-	printf("After qsort\n");
+	
 	char * buf = (char *)malloc(sizef + 1);
 	for (int i = 0; i <= num_str; i++){
 		strcpy(buf, poem_arr[i]);
@@ -60,53 +60,52 @@ char ** poem_arr_edit (FILE * fin, int * num_str){
 
 	if (fseek(fin, 0, SEEK_END) == -1){
 		perror("Fseek error "); 
-		return 1;
+		return NULL;
 	}
  
 	extern long sizef;
 	sizef = ftell(fin);
 	if (sizef == -1){
 		perror("Ftell error ");
-		return 1;
+		return NULL;
 	}
  	
 	char * poem_buf = (char *) malloc(sizef + 1);
 	if (poem_buf == NULL){
 		perror("Malloc error ");
-		return 1;
+		return NULL;
 	}
  	
 	if (fseek(fin, 0, SEEK_SET) == -1){
 		perror("Fseek error ");
-		return 1;
+		return NULL;
 	}
 	
 	if (fread(poem_buf, 1, sizef, fin) != sizef) {
 		perror("Fread error ");
-		return 1;
+		return NULL;
 	}
 	poem_buf[sizef] = '\0';	
 
-	int num_str = 0;
 	int i = 0; 
 	for (i = 0; i <= sizef; i++)
 		if (poem_buf[i] == '\n')
-			num_str++;
+			(*num_str)++;
 	
 	char * ch_start = 0;
 	char * ch_end = 0;
 	ch_start = poem_buf;
-	poem_arr = (char **)malloc(num_str * sizeof(char * ));
-	for (i = 0; i <= num_str; i++){
+	char ** poem_arr = (char **)malloc(*num_str * sizeof(char * ));
+	for (i = 0; i <= *num_str; i++){
 
 		ch_end = strchr(ch_start, '\n');
 		if (ch_end == NULL)
-			ch_end = &poem_buf[num_str];
+			ch_end = poem_buf + *num_str;
 		poem_arr[i] = (char *)malloc(ch_end - ch_start + 1);
 
 		if (poem_arr[i] == NULL){
 			perror("Malloc error ");
-			return 1;
+			return NULL;
 		}
 		
 		strncpy(poem_arr[i], ch_start, ch_end - ch_start);
@@ -116,25 +115,18 @@ char ** poem_arr_edit (FILE * fin, int * num_str){
 	}
 
 	free(poem_buf);
-	printf("%d\n", num_str);
-	printf("9\n");
-	return num_str;
-	printf("10\n");
+
+	return poem_arr;
 }
 
 int comparator (const void * val1, const void * val2){
-	printf("9\n");
+
 	char * str1 = (char*)val1;
-	printf("9.1\n");
 	char * str2 = (char*)val2;
-	printf("9.2\n");
-	printf("%p\n", val1);
-	printf("%p\n", val2);
-	printf("8\n");
+
 	int len1 = strlen(str1);
-	printf("10\n");
 	int len2 = strlen(str2);
-	printf("2\n");
+
 	int i = 1;
 	int j = 1;
 
