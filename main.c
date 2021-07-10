@@ -85,7 +85,8 @@ int poem_arr_edit (FILE * fin, char ** poem_arr){
 		perror("Fread error ");
 		return 1;
 	}
-	
+	poem_buf[sizef] = '\0';	
+
 	int num_str = 0;
 	int i = 0; 
 	for (i = 0; i <= sizef; i++)
@@ -99,6 +100,8 @@ int poem_arr_edit (FILE * fin, char ** poem_arr){
 	for (i = 0; i <= num_str; i++){
 
 		ch_end = strchr(ch_start, '\n');
+		if (ch_end == NULL)
+			ch_end = &poem_buf[num_str];
 		poem_arr[i] = (char *)malloc(ch_end - ch_start + 1);
 
 		if (poem_arr[i] == NULL){
@@ -138,16 +141,23 @@ int comparator (const void * val1, const void * val2){
 	else 
 		min_len = len1;
 	printf("2\n");
-	for (int i = 1; i <= min_len; i++){
-		if (*(char*)(str1 + len1 - i)  == *(char*)(str2 + len2 - i))
-			continue;
-		else
-			if (*(char*)(str1 + len1 - i) < *(char*)(str2 + len2 - i))
-				return -1;
-			else 
-				return 1;
-		printf("4\n");
-	}
+	int i = 0;
+	int j = 1;
+
+	for (i = 1; i <= min_len; i++)
+		while (isalpha(*(str1 + len1 - i))){
+			while (isalpha(*(str2 + len2 - j))){
+				if (*(char*)(str1 + len1 - i)  == *(char*)(str2 + len2 - j))
+					break;
+				else
+					if (*(char*)(str1 + len1 - i) < *(char*)(str2 + len2 - j))
+						return -1;
+					else
+						return 1;
+			}	
+			j++;
+		}
+
 	printf("5\n"); 
 }
 
